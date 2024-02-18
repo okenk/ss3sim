@@ -145,6 +145,7 @@ change_e <- function(ctl_file_in = "em.ctl",
     }
     endyr_orig <- dat_list$endyr
     dat_list$endyr <- dat_list$endyr - forecast_num
+    names(dat_list$endyr) <- NULL
     ss3.for <- r4ss::SS_readforecast(
       file = for_file_in,
       Nfleets = dat_list$Nfleet,
