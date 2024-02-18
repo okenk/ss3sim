@@ -55,7 +55,10 @@ change_e <- function(ctl_file_in = "em.ctl",
   if (is.list(par_name)) par_name <- unlist(par_name)
   if (is.list(par_int)) par_int <- unlist(par_int)
   if (is.list(par_phase)) par_phase <- unlist(par_phase)
-  if (is.list(forecast_num)) forecast_num <- unlist(forecast_num)
+  if (is.list(forecast_num)) {
+    forecast_num <- unlist(forecast_num)
+    names(forecast_num) <- NULL
+  }
   check_eqlength(
     "par_name" = par_name,
     "par_int" = par_int, "par_phase" = par_phase
@@ -145,7 +148,6 @@ change_e <- function(ctl_file_in = "em.ctl",
     }
     endyr_orig <- dat_list$endyr
     dat_list$endyr <- dat_list$endyr - forecast_num
-    names(dat_list$endyr) <- NULL
     ss3.for <- r4ss::SS_readforecast(
       file = for_file_in,
       Nfleets = dat_list$Nfleet,
