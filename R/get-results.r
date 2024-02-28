@@ -52,10 +52,10 @@ get_results_all <- function(directory = getwd(), overwrite_files = FALSE,
   message("Extracting results from ", length(scenarios), " scenarios")
 
   ## Loop through each scenario in folder in serial
-  dq.list <- ts.list <- scalar.list <-
-    vector(mode = "list", length = length(scenarios))
+  # dq.list <- ts.list <- scalar.list <-
+  #   vector(mode = "list", length = length(scenarios))
   setwd(directory)
-  for (i in seq_along(scenarios)) {
+  res.list <- furrr::future_map(seq_along(scenarios), \(i) {
     scen <- scenarios[i]
     ## If the files already exist just read them in, otherwise get results
     scalar.file <- file.path(scen, paste0("results_scalar_", scen, ".csv"))
@@ -79,13 +79,15 @@ get_results_all <- function(directory = getwd(), overwrite_files = FALSE,
         overwrite_files = overwrite_files
       )
     }
-    scalar.list[[i]] <- tryCatch(suppressWarnings(utils::read.csv(scalar.file, stringsAsFactors = FALSE)), error = function(e) NA)
-    ts.list[[i]] <- tryCatch(suppressWarnings(utils::read.csv(ts.file, stringsAsFactors = FALSE)), error = function(e) NA)
-    dq.list[[i]] <- tryCatch(suppressWarnings(utils::read.csv(dq.file, stringsAsFactors = FALSE)), error = function(e) NA)
-  }
-  scalar.list <- scalar.list[which(!is.na(scalar.list))]
-  ts.list <- ts.list[which(!is.na(ts.list))]
-  dq.list <- dq.list[which(!is.na(dq.list))]
+    scalar.list <- tryCatch(suppressWarnings(utils::read.csv(scalar.file, stringsAsFactors = FALSE)), error = function(e) NA)
+    ts.list <- tryCatch(suppressWarnings(utils::read.csv(ts.file, stringsAsFactors = FALSE)), error = function(e) NA)
+    dq.list <- tryCatch(suppressWarnings(utils::read.csv(dq.file, stringsAsFactors = FALSE)), error = function(e) NA)
+    return(list(scalar = scalar.list, ts = ts.list, dq = dq.list))
+  })
+
+  scalar.list <- purrr::map(res.list, \(.x) pluck(.x, 'scalar'))
+  ts.list <- purrr::map(res.list, \(.x) pluck(.x, 'ts'))
+  dq.list <- purrr::map(res.list, \(.x) pluck(.x, 'dq'))
   ## Combine all scenarios together and save into big final files
   scalar.all <- add_colnames(scalar.list, bind = TRUE)
   ts.all <- add_colnames(ts.list, bind = TRUE)

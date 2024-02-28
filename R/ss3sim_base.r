@@ -548,25 +548,8 @@ ss3sim_base <- function(iterations,
     dat_list <- sample_catch(dat_list = dat_list)
 
     ## Survey biomass index
-    ### First need to fixed expected values for index type 36 and bad SS3 versions
-    if(any(dat_list$CPUEinfo$Units == 36) & any(is.nan(dat_list$CPUE$obs))) {
-      warning('Replacing NaN recruitment index with rec devs. \n
-              SS3 may not behave as expected. Try a different release.')
-      rec_flt_ind <- dat_list$CPUEinfo$Fleet[dat_list$CPUEinfo$Units == 36]
-      if(rec_flt_ind %in% index_params$fleets){
-        om_res <- r4ss::SS_output(file.path(sc, i, "om"),
-                                  forecast = FALSE, warn = FALSE, covar = FALSE,
-                                  readwt = FALSE, verbose = FALSE,
-                                  printstats = FALSE)
-        rec_yrs <- index_params$years[[which(index_params$fleets == rec_flt_ind)]]
-        rec_devs <- dplyr::filter(om_res$recruit, Yr %in% rec_yrs) |>
-          dplyr::pull(dev)
-        dat_list$CPUE$obs[dat_list$CPUE$year %in% rec_yrs &
-                            dat_list$CPUE$index == rec_flt_ind] <- rec_devs
-      }
-    }
-    ### Now sample
-    dat_list <- do.call(
+
+        dat_list <- do.call(
       "sample_index",
       c(dat_list = list(dat_list), index_params)
     )
