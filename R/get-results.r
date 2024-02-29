@@ -85,9 +85,9 @@ get_results_all <- function(directory = getwd(), overwrite_files = FALSE,
     return(list(scalar = scalar.list, ts = ts.list, dq = dq.list))
   })
 
-  scalar.list <- purrr::map(res.list, \(.x) pluck(.x, 'scalar'))
-  ts.list <- purrr::map(res.list, \(.x) pluck(.x, 'ts'))
-  dq.list <- purrr::map(res.list, \(.x) pluck(.x, 'dq'))
+  scalar.list <- purrr::map(res.list, \(.x) purrr::pluck(.x, 'scalar'))
+  ts.list <- purrr::map(res.list, \(.x) purrr::pluck(.x, 'ts'))
+  dq.list <- purrr::map(res.list, \(.x) purrr::pluck(.x, 'dq'))
   ## Combine all scenarios together and save into big final files
   scalar.all <- add_colnames(scalar.list, bind = TRUE)
   ts.all <- add_colnames(ts.list, bind = TRUE)
