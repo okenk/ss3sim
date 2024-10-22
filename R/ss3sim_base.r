@@ -546,8 +546,10 @@ ss3sim_base <- function(iterations,
 
     ## Sample catches
     dat_list <- sample_catch(dat_list = dat_list)
+
     ## Survey biomass index
-    dat_list <- do.call(
+
+        dat_list <- do.call(
       "sample_index",
       c(dat_list = list(dat_list), index_params)
     )

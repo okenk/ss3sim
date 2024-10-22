@@ -52,6 +52,7 @@ change_e <- function(ctl_file_in = "em.ctl",
                      par_phase = "NA",
                      forecast_num = 0,
                      verbose = FALSE) {
+
   if (inherits(par_name, "list")) {
     par_name <- unlist(par_name)
   }
